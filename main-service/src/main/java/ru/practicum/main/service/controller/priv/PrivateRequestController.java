@@ -29,7 +29,7 @@ public class PrivateRequestController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ParticipationRequestResponse addRequest(@Positive(message = "Поле userId не положительное или null") @PathVariable long userId,
-                                                   @Positive(message = "Поле eventId не положительное") @RequestParam Long eventId) {
+                                                   @Positive(message = "Поле eventId не положительное или null") @RequestParam long eventId) {
         log.info("=== POST Запрос - addRequest. userId: {}, eventId: {} ===", userId, eventId);
         return service.addRequest(userId, eventId);
     }

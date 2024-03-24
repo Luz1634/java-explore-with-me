@@ -27,12 +27,4 @@ public class CompilationMapper {
         compilationResponse.setTitle(compilation.getTitle());
         return compilationResponse;
     }
-
-    public CompilationResponse toCompilationResponse(Compilation compilation) {
-        CompilationResponse compilationResponse = new CompilationResponse();
-        compilationResponse.setId(compilation.getId());
-        compilationResponse.setPinned(compilation.isPinned());
-        compilationResponse.setTitle(compilation.getTitle());
-        return compilationResponse;
-    }
 }

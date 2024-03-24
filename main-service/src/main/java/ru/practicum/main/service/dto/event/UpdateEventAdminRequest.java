@@ -5,7 +5,6 @@ import lombok.*;
 import ru.practicum.main.service.annotation.HoursAfterOrEquals;
 import ru.practicum.main.service.enums.StateAdminAction;
 
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PositiveOrZero;
 import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
@@ -31,7 +30,6 @@ public class UpdateEventAdminRequest {
     @PositiveOrZero(message = "Поле participantLimit отрицательное")
     private Integer participantLimit;
     private Boolean requestModeration;
-    @NotNull(message = "Поле stateAction являеться null")
     private StateAdminAction stateAction;
     @Size(min = 3, max = 120, message = "Поле title должно быть от 3 до 120 символов")
     private String title;

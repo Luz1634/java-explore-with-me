@@ -73,12 +73,17 @@ public class EventService {
             throw new NotExistException("Event с id = " + eventId + " недоступно");
         }
 
+        // При каждом обращении к событию добавляем это в статистику и после обновляем количество уникальных просмотров
         statsClient.addEvent(new EventRequest("ewm-main-service",
                 request.getRequestURI(),
                 request.getRemoteAddr(),
                 LocalDateTime.now()));
 
-        event.setViews(event.getViews() + 1);
+        event.setViews(statsClient.getStatistics(event.getCreatedOn(),
+                LocalDateTime.now(),
+                List.of(request.getRequestURI()),
+                true).get(0).getHits());
+
         repository.save(event);
 
         return mapper.toEventFullResponse(event,
@@ -138,7 +143,7 @@ public class EventService {
 
         Specification<Event> specification = Specification
                 .where(EventSpecification.hasTextAnnotation(text))
-                .and(EventSpecification.hasTextDescription(text))
+                .or(EventSpecification.hasTextDescription(text))
                 .and(EventSpecification.hasCategories(categories))
                 .and(EventSpecification.hasPaid(paid))
                 .and(EventSpecification.hasRangeDate(rangeStart, rangeEnd))
@@ -211,11 +216,14 @@ public class EventService {
         if (updateRequest.getRequestModeration() != null) {
             event.setRequestModeration(updateRequest.getRequestModeration());
         }
-        if (updateRequest.getStateAction().equals(StateUserAction.CANCEL_REVIEW)) {
-            event.setState(StateEvent.CANCELED);
-        } else {
-            event.setState(StateEvent.PENDING);
+        if (updateRequest.getStateAction() != null) {
+            if (updateRequest.getStateAction().equals(StateUserAction.CANCEL_REVIEW)) {
+                event.setState(StateEvent.CANCELED);
+            } else {
+                event.setState(StateEvent.PENDING);
+            }
         }
+
         if (updateRequest.getTitle() != null) {
             event.setTitle(updateRequest.getTitle());
         }
@@ -263,11 +271,13 @@ public class EventService {
         if (updateRequest.getRequestModeration() != null) {
             event.setRequestModeration(updateRequest.getRequestModeration());
         }
-        if (updateRequest.getStateAction().equals(StateAdminAction.PUBLISH_EVENT)) {
-            event.setState(StateEvent.PUBLISHED);
-            event.setPublishedOn(LocalDateTime.now());
-        } else {
-            event.setState(StateEvent.CANCELED);
+        if (updateRequest.getStateAction() != null) {
+            if (updateRequest.getStateAction().equals(StateAdminAction.PUBLISH_EVENT)) {
+                event.setState(StateEvent.PUBLISHED);
+                event.setPublishedOn(LocalDateTime.now());
+            } else {
+                event.setState(StateEvent.CANCELED);
+            }
         }
         if (updateRequest.getTitle() != null) {
             event.setTitle(updateRequest.getTitle());

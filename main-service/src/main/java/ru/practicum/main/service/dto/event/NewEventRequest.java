@@ -36,7 +36,7 @@ public class NewEventRequest {
     @PositiveOrZero(message = "Поле participantLimit отрицательное")
     private int participantLimit;
     @Value("true")
-    private boolean requestModeration;
+    private Boolean requestModeration;
     @NotBlank(message = "Поле title пустое или null")
     @Size(min = 3, max = 120, message = "Поле title должно быть от 3 до 120 символов")
     private String title;

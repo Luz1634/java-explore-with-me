@@ -73,13 +73,17 @@ public class CompilationService {
     }
 
     public CompilationResponse getCompilation(long compId) {
-        return mapper.toCompilationResponse(checkCompilation(compId));
+        Compilation compilation = checkCompilation(compId);
+        return mapper.toCompilationResponse(compilation,
+                convertEventToShort(eventRepository.findAllById(compilation.getEvents())));
     }
 
     @Transactional
     public CompilationResponse addCompilation(NewCompilationRequest newCompilationRequest) {
-        List<Event> events = checkEvents(newCompilationRequest.getEvents());
-
+        List<Event> events = new ArrayList<>();
+        if (newCompilationRequest.getEvents() != null) {
+            events = checkEvents(newCompilationRequest.getEvents());
+        }
         return mapper.toCompilationResponse(repository.save(mapper.toCompilation(newCompilationRequest)),
                 convertEventToShort(events));
     }

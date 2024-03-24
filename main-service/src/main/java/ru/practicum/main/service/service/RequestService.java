@@ -21,6 +21,8 @@ import ru.practicum.main.service.repository.UserRepository;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 
@@ -64,10 +66,11 @@ public class RequestService {
         if (!event.getState().equals(StateEvent.PUBLISHED)) {
             throw new ConflictException("Event с id = " + eventId + " не опубликовано");
         }
-        if (event.getConfirmedRequests().contains(userId)) {
+        if (repository.findAllByEventId(eventId).stream().map(Request::getRequesterId).collect(Collectors.toSet()).contains(userId)) {
             throw new ConflictException("User с id = " + userId + " уже в списке участников");
         }
-        if (event.getParticipantLimit() <= event.getConfirmedRequests().size()) {
+        if (event.getParticipantLimit() != 0
+                && event.getParticipantLimit() <= repository.findAllByStatusAndEventId(StateRequest.CONFIRMED, eventId).size()) {
             throw new ConflictException("Event с id = " + eventId + " имеет максимальное количество участников");
         }
 
@@ -87,7 +90,7 @@ public class RequestService {
     @Transactional
     public ParticipationRequestResponse cancelRequest(long userId, long requestId) {
         checkUser(userId);
-        Request request = repository.findById(userId)
+        Request request = repository.findById(requestId)
                 .orElseThrow(() -> new NotExistException("Request с id = " + requestId + " не существует"));
 
         request.setStatus(StateRequest.CANCELED);
@@ -124,16 +127,19 @@ public class RequestService {
             return getAllEventRequests(eventId);
         }
 
+        Set<Long> confirmedRequests = repository.findAllByStatusAndEventId(StateRequest.CONFIRMED, eventId)
+                .stream().map(Request::getRequesterId).collect(Collectors.toSet());
+
         // Проверяем что есть места для подтверждения
-        if (event.getConfirmedRequests().size() >= event.getParticipantLimit()
+        if (confirmedRequests.size() >= event.getParticipantLimit()
                 && eventRequestStatusUpdateRequest.getStatus().equals(StatusRequests.CONFIRMED)) {
             throw new ConflictException("Event с id = " + eventId + " имеет максимальное количество участников");
         }
 
         for (Request request : requests) {
-            if (event.getConfirmedRequests().size() < event.getParticipantLimit()) {
+            if (confirmedRequests.size() <= event.getParticipantLimit()) {
                 request.setStatus(StateRequest.CONFIRMED);
-                event.getConfirmedRequests().add(request.getId());
+                confirmedRequests.add(request.getId());
             } else {
                 request.setStatus(StateRequest.REJECTED);
             }

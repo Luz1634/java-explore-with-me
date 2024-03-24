@@ -25,7 +25,11 @@ public class EventMapper {
         event.setLon(newEventRequest.getLocation().getLon());
         event.setPaid(newEventRequest.isPaid());
         event.setParticipantLimit(newEventRequest.getParticipantLimit());
-        event.setRequestModeration(newEventRequest.isRequestModeration());
+        if (newEventRequest.getRequestModeration() == null) {
+            event.setRequestModeration(true);
+        } else {
+            event.setRequestModeration(newEventRequest.getRequestModeration());
+        }
         event.setState(StateEvent.PENDING);
         event.setTitle(newEventRequest.getTitle());
         return event;
@@ -37,12 +41,15 @@ public class EventMapper {
         EventShortResponse eventShortResponse = new EventShortResponse();
         eventShortResponse.setAnnotation(event.getAnnotation());
         eventShortResponse.setCategory(categoryResponse);
-        eventShortResponse.setConfirmedRequests((long) event.getConfirmedRequests().size());
-        eventShortResponse.setId(eventShortResponse.getId());
+        if (event.getConfirmedRequests() != null) {
+            eventShortResponse.setConfirmedRequests((long) event.getConfirmedRequests().size());
+        }
+        eventShortResponse.setEventDate(event.getEventDate());
+        eventShortResponse.setId(event.getId());
         eventShortResponse.setInitiator(userShortDto);
         eventShortResponse.setPaid(event.isPaid());
-        eventShortResponse.setTitle(eventShortResponse.getTitle());
-        eventShortResponse.setViews(eventShortResponse.getViews());
+        eventShortResponse.setTitle(event.getTitle());
+        eventShortResponse.setViews(event.getViews());
         return eventShortResponse;
     }
 
@@ -56,6 +63,7 @@ public class EventMapper {
         if (event.getConfirmedRequests() != null) {
             eventFullResponse.setConfirmedRequests((long) event.getConfirmedRequests().size());
         }
+        eventFullResponse.setId(event.getId());
         eventFullResponse.setCreatedOn(event.getCreatedOn());
         eventFullResponse.setDescription(event.getDescription());
         eventFullResponse.setEventDate(event.getEventDate());
