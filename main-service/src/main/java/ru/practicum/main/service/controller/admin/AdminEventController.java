@@ -11,7 +11,6 @@ import ru.practicum.main.service.enums.StateEvent;
 import ru.practicum.main.service.service.EventService;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -39,9 +38,7 @@ public class AdminEventController {
     }
 
     @PatchMapping("/{eventId}")
-    public EventFullResponse updateEvent(
-//            @Positive(message = "Поле eventId не положительное или null")
-            @PathVariable Long eventId,
+    public EventFullResponse updateEvent(@Positive(message = "Поле eventId не положительное или null") @PathVariable Long eventId,
                                          @Valid @RequestBody UpdateEventAdminRequest updateEventAdminRequest) {
         log.info("=== PATCH Запрос - updateEvent. eventId: {}, updateEventAdminRequest: {} ===", eventId, updateEventAdminRequest);
         return service.updateEventAdmin(eventId, updateEventAdminRequest);
