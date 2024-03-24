@@ -14,6 +14,7 @@ import ru.practicum.stats.dto.StatisticResponse;
 import ru.practicum.stats.exception.ServerResponseException;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Component
@@ -34,9 +35,9 @@ public class StatsClient {
         urlRequest.append(url)
                 .append("/stats?")
                 .append("start=")
-                .append(start)
+                .append(start.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
                 .append("&end=")
-                .append(end);
+                .append(end.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
 
         if (uris != null && !uris.isEmpty()) {
             urlRequest.append("&uris=");

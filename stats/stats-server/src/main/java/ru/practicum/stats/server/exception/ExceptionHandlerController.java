@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import javax.validation.ConstraintViolationException;
+
 @RestControllerAdvice("ru.practicum.stats.server")
 @Slf4j
 public class ExceptionHandlerController {
@@ -26,6 +28,17 @@ public class ExceptionHandlerController {
         ExceptionHandlerResponse response = new ExceptionHandlerResponse("Ошибка при работе с БД",
                 exception.getSQLException().getMessage());
         log.warn(response.toString());
+        return response;
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler
+    public ExceptionHandlerResponse validated(ConstraintViolationException exception) {
+        ExceptionHandlerResponse response = new ExceptionHandlerResponse("Ошибка при валидации объекта",
+                exception.getMessage());
+
+        log.warn(response.toString());
+
         return response;
     }
 }
