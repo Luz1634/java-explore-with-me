@@ -68,7 +68,7 @@
 							"});\r",
 							"\r",
 							"pm.test(\"Запрос на на добавление в друзья должен содержать нового друга\", function () {\r",
-							"pm.expect(target.friends[0]).equal(friend);\r",
+							"pm.expect(target.friends[0].toString()).equal(friend.toString());\r",
 							"});\r",
 							""
 						],
