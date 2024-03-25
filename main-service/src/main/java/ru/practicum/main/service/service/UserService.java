@@ -63,7 +63,7 @@ public class UserService {
         User user = checkUser(userId);
 
         if (!user.getFriends().contains(friendId)) {
-            throw new NotExistException("User с id = " + userId + "не имеет в друзьях friendId = " + friendId);
+            throw new NotExistException("User с id = " + userId + " не имеет в друзьях friendId = " + friendId);
         }
 
         Set<Long> eventIds = requestRepository.findByRequesterIdAndStatus(friendId, StateRequest.CONFIRMED)
@@ -118,7 +118,7 @@ public class UserService {
         User user = checkUser(userId);
 
         if (user.getFriends().contains(friendId)) {
-            throw new ConflictException("User с id = " + userId + "уже является другом с friendId = " + friendId);
+            throw new ConflictException("User с id = " + userId + " уже является другом с friendId = " + friendId);
         }
 
         user.getFriends().add(checkUser(friendId).getId());
@@ -138,7 +138,7 @@ public class UserService {
         User user = checkUser(userId);
 
         if (!user.getFriends().remove(friendId)) {
-            throw new NotExistException("User с id = " + userId + "не является другом с friendId = " + friendId);
+            throw new NotExistException("User с id = " + userId + " не является другом с friendId = " + friendId);
         }
 
         repository.save(user);
